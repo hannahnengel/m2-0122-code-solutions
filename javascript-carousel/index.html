@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JavaScript Carousel</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="column-third">
+        <i class="fas fa-chevron-left arrow"></i>
+      </div>
+      <div class="column-third img-view" data-view="active-img" slide-number="1">
+        <img class="hero-img" src="images/001.png" alt="Bulbasor">
+      </div>
+      <div class="column-third img-view hidden" data-view="next-img" slide-number="2">
+        <img class="hero-img" src="images/004.png" alt="Charizard">
+      </div>
+      <div class="column-third img-view hidden" data-view="hidden-img" slide-number="3">
+        <img class="hero-img" src="images/007.png" alt="Squirtle">
+      </div>
+      <div class="column-third img-view hidden" data-view="hidden-img" slide-number="4">
+        <img class="hero-img" src="images/025.png" alt="Pikachu">
+      </div>
+      <div class="column-third img-view hidden" data-view="previous-img" slide-number="5">
+        <img class="hero-img" src="images/039.png" alt="Jigglypuff">
+      </div>
+      <div class="column-third">
+        <i class="fas fa-chevron-right arrow"></i>
+      </div>
+    </div>
+    <div class="row">
+      <div class="column-full">
+        <i class="fas fa-circle" data-view="active" slide-number="1"></i>
+        <i class="far fa-circle" data-view="next" slide-number="2"></i>
+        <i class="far fa-circle" data-view="hidden" slide-number="3"></i>
+        <i class="far fa-circle" data-view="hidden" slide-number="4"></i>
+        <i class="far fa-circle" data-view="previous" slide-number="5"></i>
+      </div>
+    </div>
+  </div>
+  <script src="main.js"></script>
+</body>
+</html>

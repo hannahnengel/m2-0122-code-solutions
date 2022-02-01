@@ -1,0 +1,42 @@
+.container {
+  width: 100%;
+  max-width: 1500px;
+  margin: auto;
+  min-width: 830px;
+}
+
+.row {
+  display: flex;
+}
+
+.column-full {
+  text-align: center;
+  width: 100%;
+}
+
+.column-third {
+  width: calc(100% / 3);
+  text-align: center;
+  line-height: 500px;
+  height: 400px;
+  justify-content: center;
+}
+
+.hero-img {
+  width: 100%;
+  min-width: 300px;
+  max-width: 400px;
+}
+
+.arrow {
+  font-size: 2.2rem;
+}
+
+.fa-circle {
+  font-size: 1.5rem;
+  padding: 0.5rem;
+}
+
+.hidden {
+  display: none;
+}
