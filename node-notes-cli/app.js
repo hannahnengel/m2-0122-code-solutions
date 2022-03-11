@@ -1,5 +1,6 @@
 
 const func = process.argv[2];
+
 if (func === 'read') {
   const data = require('./data.json');
   const notes = data.notes;
@@ -13,8 +14,10 @@ if (func === 'create') {
   const nextId = data.nextId;
   const newNote = process.argv[3];
   const notes = data.notes;
+  const newNextId = data.nextId + 1;
 
   notes[nextId] = newNote;
+  data.nextId = newNextId;
   rewriteFile(data);
 }
 
@@ -24,8 +27,12 @@ if (func === 'update') {
   const updatedNote = process.argv[4];
   const notes = data.notes;
 
-  notes[id] = updatedNote;
-  rewriteFile(data);
+  for (const prop in notes) {
+    if (prop === id) {
+      notes[id] = updatedNote;
+      rewriteFile(data);
+    }
+  }
 }
 
 if (func === 'delete') {
@@ -36,14 +43,6 @@ if (func === 'delete') {
   delete notes[id];
   rewriteFile(data);
 }
-
-const data = require('./data.json');
-var nextId = data.nextId;
-for (const prop in data.notes) {
-  nextId = parseInt(prop) + 1;
-}
-data.nextId = nextId;
-rewriteFile(data);
 
 function rewriteFile(data) {
   const dataJSON = JSON.stringify(data, null, 2);
