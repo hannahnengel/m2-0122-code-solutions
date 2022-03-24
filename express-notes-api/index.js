@@ -13,30 +13,58 @@ app.get('/api/notes', (req, res) => {
   res.json(dataArray);
 });
 
-app.get('/api/notes/:id', (req, res) => {
-  const id = req.params.id;
-  const isInt = Number.isInteger(parseInt(id));
-  let idIsThere = false;
-  var noteToRead;
+var errors = {
+  errPostiveInt: { error: 'id must be a positive integer' },
+  errCannotFind: { error: 'cannot find note with id ' },
+  errRequireContent: { error: 'content is a required field' },
+  noErr: 'no error'
+};
 
-  const errPostiveInt = {
-    error: 'id must be a positive integer'
-  };
-  const errCannotFind = {
-    error: `cannot find note with id ${id}`
-  };
+function errorMsgID(id) {
+  let error;
+  let idIsThere;
+  const idNum = parseFloat(id);
+  const isInt = Number.isInteger(idNum);
 
-  for (const prop in notes) {
-    if (parseInt(prop) === parseInt(id)) {
-      idIsThere = true;
+  if (typeof idNum === 'number' && idNum > 0 && !isNaN(idNum)) {
+    if (isInt) {
+      for (const prop in notes) {
+        if (parseInt(prop) === parseInt(id)) {
+          idIsThere = true;
+        }
+      }
+      if (idIsThere === true) {
+        error = errors.noErr;
+      } else {
+        errors.errCannotFind.error = `cannot find note with id ${id}`;
+        error = errors.errCannotFind;
+      }
+    } else {
+      error = errors.errPostiveInt;
     }
+  } else {
+    error = errors.errPostiveInt;
   }
 
-  if ((isInt === false) || parseInt(id) < 0) {
-    res.status(400).json(errPostiveInt);
-  } else if (isInt === true && parseInt(id) > 0 && (idIsThere === false)) {
-    res.status(404).json(errCannotFind);
-  } else if (isInt === true && parseInt(id) > 0 && idIsThere === true) {
+  return error;
+}
+
+function errorMsgContent() {
+  const error = errors.errRequireContent;
+  return error;
+}
+
+app.get('/api/notes/:id', (req, res) => {
+  const id = req.params.id;
+  const error = errorMsgID(id);
+
+  var noteToRead;
+
+  if (error === errors.errPostiveInt) {
+    res.status(400).json(error);
+  } else if (error === errors.errCannotFind) {
+    res.status(404).json(error);
+  } else if (error === errors.noErr) {
     for (const prop in notes) {
       if (prop === id) {
         noteToRead = notes[prop];
@@ -44,97 +72,85 @@ app.get('/api/notes/:id', (req, res) => {
     }
     res.status(200).json(noteToRead);
   }
+
 });
 
 app.use(express.json());
 
 app.post('/api/notes', (req, res) => {
-  const errRequireContent = {
-    error: 'content is a required field'
-  };
+  let error;
   if (req.body.content === undefined) {
-    res.status(400).json(errRequireContent);
+    error = errorMsgContent();
+    res.status(400).json(error);
   } else {
     const newContent = req.body;
     newContent.id = nextID;
     notes[nextID] = newContent;
     nextID++;
+    data.nextId = nextID;
+    data.notes = notes;
+    rewriteFile(data);
     res.status(201).send(newContent);
   }
 });
 
 app.delete('/api/notes/:id', (req, res) => {
   const id = req.params.id;
-  const isInt = Number.isInteger(parseInt(id));
-  let idIsThere = false;
+  const error = errorMsgID(id);
 
-  const errPostiveInt = {
-    error: 'id must be a positive integer'
-  };
-  const errCannotFind = {
-    error: `cannot find note with id ${id}`
-  };
-
-  for (const prop in notes) {
-    if (parseInt(prop) === parseInt(id)) {
-      idIsThere = true;
-    }
-  }
-
-  if ((isInt === false) || parseInt(id) < 0) {
-    res.status(400).json(errPostiveInt);
-  } else if (isInt === true && parseInt(id) > 0 && (idIsThere === false)) {
-    res.status(404).json(errCannotFind);
-  } else if (isInt === true && parseInt(id) > 0 && idIsThere === true) {
+  if (error === errors.errPostiveInt) {
+    res.status(400).json(error);
+  } else if (error === errors.errCannotFind) {
+    res.status(404).json(error);
+  } else if (error === errors.noErr) {
     for (const prop in notes) {
       if (prop === id) {
-        delete notes[prop];
+        delete notes[id];
       }
     }
+    data.notes = notes;
+    rewriteFile(data);
     res.status(204).send();
   }
 });
 
 app.put('/api/notes/:id', (req, res) => {
   const id = req.params.id;
-  const isInt = Number.isInteger(parseInt(id));
-  let idIsThere = false;
+  let error = errorMsgID(id);
   let newContent;
 
-  const errPostiveInt = {
-    error: 'id must be a positive integer'
-  };
-  const errCannotFind = {
-    error: `cannot find note with id ${id}`
-  };
-  const errRequireContent = {
-    error: 'content is a required field'
-  };
+  if (error === errors.errPostiveInt) {
+    res.status(400).json(error);
+  } else if (error === errors.errCannotFind) {
+    res.status(404).json(error);
+  } else if (error === errors.noErr) {
+    if (req.body.content === undefined) {
+      error = errorMsgContent();
+      res.status(400).json(error);
+    } else {
+      newContent = req.body.content;
 
-  for (const prop in notes) {
-    if (parseInt(prop) === parseInt(id)) {
-      idIsThere = true;
-    }
-  }
-
-  if ((isInt === false) || parseInt(id) < 0) {
-    res.status(400).json(errPostiveInt);
-  } else if ((isInt === true && parseInt(id) > 0 && (idIsThere === false))) {
-    res.status(404).json(errCannotFind);
-  } else if (req.body.content === undefined) {
-    res.status(400).json(errRequireContent);
-  } else if (isInt === true && parseInt(id) > 0 && idIsThere === true && req.body.content !== undefined) {
-    newContent = req.body.content;
-
-    for (const prop in notes) {
-      if (prop === id) {
-        notes[prop].content = newContent;
-        var successMsg = notes[prop];
+      for (const prop in notes) {
+        if (prop === id) {
+          notes[prop].content = newContent;
+          var successMsg = notes[prop];
+        }
       }
+      data.notes = notes;
+      rewriteFile(data);
+      res.status(200).json(successMsg);
     }
-    res.status(200).json(successMsg);
   }
 });
+
+rewriteFile(data);
+function rewriteFile(data) {
+  const dataJSON = JSON.stringify(data, null, 2);
+  const fs = require('fs');
+  fs.writeFile('data.json', dataJSON, err => {
+    if (err) throw err;
+  });
+}
 
 app.listen(3000, () => {
   // eslint-disable-next-line no-console
