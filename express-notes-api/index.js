@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
 
+const fs = require('fs');
+
 const data = require('./data.json');
 var nextID = data.nextId;
 var notes = data.notes;
@@ -90,7 +92,7 @@ app.post('/api/notes', (req, res) => {
     data.nextId = nextID;
     data.notes = notes;
     const dataJSON = JSON.stringify(data, null, 2);
-    const fs = require('fs');
+
     fs.writeFile('data.json', dataJSON, err => {
       if (err) { throw err; } else {
         res.status(201).send(newContent);
@@ -115,7 +117,6 @@ app.delete('/api/notes/:id', (req, res) => {
     }
     data.notes = notes;
     const dataJSON = JSON.stringify(data, null, 2);
-    const fs = require('fs');
     fs.writeFile('data.json', dataJSON, err => {
       if (err) { throw err; } else {
         res.status(204).send();
@@ -148,7 +149,6 @@ app.put('/api/notes/:id', (req, res) => {
       }
       data.notes = notes;
       const dataJSON = JSON.stringify(data, null, 2);
-      const fs = require('fs');
       fs.writeFile('data.json', dataJSON, err => {
         if (err) { throw err; } else {
           res.status(200).json(successMsg);
