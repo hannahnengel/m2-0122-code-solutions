@@ -89,8 +89,13 @@ app.post('/api/notes', (req, res) => {
     nextID++;
     data.nextId = nextID;
     data.notes = notes;
-    rewriteFile(data);
-    res.status(201).send(newContent);
+    const dataJSON = JSON.stringify(data, null, 2);
+    const fs = require('fs');
+    fs.writeFile('data.json', dataJSON, err => {
+      if (err) { throw err; } else {
+        res.status(201).send(newContent);
+      }
+    });
   }
 });
 
@@ -109,8 +114,13 @@ app.delete('/api/notes/:id', (req, res) => {
       }
     }
     data.notes = notes;
-    rewriteFile(data);
-    res.status(204).send();
+    const dataJSON = JSON.stringify(data, null, 2);
+    const fs = require('fs');
+    fs.writeFile('data.json', dataJSON, err => {
+      if (err) { throw err; } else {
+        res.status(204).send();
+      }
+    });
   }
 });
 
@@ -137,20 +147,16 @@ app.put('/api/notes/:id', (req, res) => {
         }
       }
       data.notes = notes;
-      rewriteFile(data);
-      res.status(200).json(successMsg);
+      const dataJSON = JSON.stringify(data, null, 2);
+      const fs = require('fs');
+      fs.writeFile('data.json', dataJSON, err => {
+        if (err) { throw err; } else {
+          res.status(200).json(successMsg);
+        }
+      });
     }
   }
 });
-
-rewriteFile(data);
-function rewriteFile(data) {
-  const dataJSON = JSON.stringify(data, null, 2);
-  const fs = require('fs');
-  fs.writeFile('data.json', dataJSON, err => {
-    if (err) throw err;
-  });
-}
 
 app.listen(3000, () => {
   // eslint-disable-next-line no-console
