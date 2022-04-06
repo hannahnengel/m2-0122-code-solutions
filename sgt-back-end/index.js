@@ -37,11 +37,13 @@ app.post('/api/grades', (req, res) => {
     res.status(400).json({
       error: 'Invalid grade. Name, course, and score are required fields.'
     });
+    return;
   }
   if (!Number.isInteger(score) || score < 0 || score > 100) {
     res.status(400).json({
       error: 'Invalid grade. Score must be an integer between 0 and 100.'
     });
+    return;
   }
   const sql = `
   insert into "grades" ("name", "course", "score")
@@ -138,7 +140,7 @@ app.delete('/api/grades/:gradeId', (req, res) => {
           error: `Cannot find grade with gradeId ${gradeId}`
         });
       } else {
-        res.status(204).json();
+        res.sendStatus(204);
       }
     })
     .catch(err => {
